@@ -37,14 +37,15 @@ fn main() {
     );
 
     info!("Fetching background: {}", url);
-    let response = reqwest::blocking::get(&url).expect(&format!("No response on url {}", url));
+    let response =
+        reqwest::blocking::get(&url).unwrap_or_else(|_| panic!("No response on url {}", url));
     let json: Response = response.json().expect("Cannot parse json");
 
     let index = rng.gen_range(0..json.data.len());
     let chosen = json
         .data
         .get(index)
-        .expect(&format!("Cannot find index {} in json", index));
+        .unwrap_or_else(|| panic!("Cannot find index {} in json", index));
 
     info!("Attempting to change background to: {}", &chosen.path);
     wallpaper::set_from_url(&chosen.path).expect("Unable to set wallpaper");
